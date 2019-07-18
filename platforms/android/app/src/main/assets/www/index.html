@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+        <title>Lista de produtos</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">   
+        <!-- <meta name="theme-color" content="darkslategrey"> -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="myNotes">
+        <meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
+        <meta name="msapplication-TileColor" content="#607d8b">
+        <link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
+        <link rel="manifest" href="manifest.json">  
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+        <!--Let browser know website is optimized for mobile-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+
+    <body>
+        <div id="spinner"></div>
+        <div id="container">
+            <ul class="collection"></ul>
+        </div>
+        <!-- JavaScript (Fetch API) -->
+		<script>
+                url = 'http://192.168.0.121:5000/produtos'
+                const lista = document.querySelector(".collection")
+                const spinner = document.getElementById("spinner")
+                const btdados = document.querySelector("button")
+                //document.querySelector("button").style.visibility = "hidden"
+    
+                function listItems(items, pageActual, limitItems){
+                    let result = [];
+                    let totalPage = Math.ceil( items.length / limitItems );
+                    let count = ( pageActual * limitItems ) - limitItems;
+                    let delimiter = count + limitItems;
+                
+                    if(pageActual <= totalPage){
+                        for(let i=count; i<delimiter; i++){
+                            if(items[i] != null){
+                                result.push(items[i]);
+                            }
+                            count++;
+                        }
+                    }
+                    return result;
+                }
+    
+                function showSpinner() {
+                    spinner.className = "show";
+                    setTimeout(() => {
+                        spinner.className = spinner.className.replace("show", "");
+                    }, 5000);
+                }
+    
+                function hideSpinner() {
+                    spinner.className = spinner.className.replace("show", "");
+                }
+    
+                function listRows(data){
+                    data.map(field => {
+                        lista.innerHTML += `
+                            <li class="collection-item avatar">
+                                <img src="images/produtos/${field['id']}.jpg" alt="" class="circle">
+                                <span class="title">${field['descricao']}</span>
+                                <p><strong>${field['preco']}</strong><br>${field['fornecedor']}</p>
+                                <a href="#" class="secondary-content"><i class="material-icons">more_vert</i></a>
+                            </li>
+                        `
+                    })
+                }
+    
+                showSpinner()
+    
+                fetch(url, { 
+                    mode:'cors',
+                    headers: {
+                        'credentials':"include",
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json'
+                    },
+                }).then(res => res.json()).then(data => {
+                    hideSpinner()
+                    
+                    listRows(data)
+                    
+                    // btdados.addEventListener('click', event =>{
+                    //     event.preventDefault()
+                    //     datalist1 = listItems(data, 1, 3)
+                    //     datalist2 = listItems(data, 2, 2)
+                    //     console.log(datalist2)
+                    // })
+                                    
+                })		
+            </script>
+
+      <!--Import jQuery before materialize.js-->
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+    </body>
+  </html>
